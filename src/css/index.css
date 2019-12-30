@@ -5,8 +5,13 @@ html, body {
     height: 100%;
     margin: 0px;
     padding: 0px;
+    background-color: #0c0c0c;
 }
 
 canvas {
     -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+    padding: 50px;
 }
