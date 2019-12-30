@@ -1,3 +1,5 @@
+import {Key, KEY_STATE} from './controls';
+
 export default class Ship {
     private x: number = 100;
     private y: number = 100;
@@ -31,6 +33,10 @@ export default class Ship {
     }
 
     public update(): void {
+        if(KEY_STATE.has(Key.Left)) this.rotateLeft();
+        if(KEY_STATE.has(Key.Right)) this.rotateRight();
+        this.accelerate(KEY_STATE.has(Key.Throttle));
+
         this.xAcceleration = Math.cos(this.accelerationDirection) * this.acceleration
         this.yAcceleration = Math.sin(this.accelerationDirection) * this.acceleration
 
@@ -40,10 +46,10 @@ export default class Ship {
         this.x = this.x+ this.xVelocity;
         this.y += this.yVelocity;
 
-        if (this.xVelocity > 1) this.xVelocity = 1;
-        if (this.yVelocity > 1) this.yVelocity = 1;
-        if (this.xVelocity < -1) this.xVelocity = -1;
-        if (this.yVelocity < -1) this.yVelocity = -1;
+        if (this.xVelocity > 3) this.xVelocity = 3;
+        if (this.yVelocity > 3) this.yVelocity = 3;
+        if (this.xVelocity < -3) this.xVelocity = -3;
+        if (this.yVelocity < -3) this.yVelocity = -3;
 
         if (this.x <= 0) {
             this.x = 799;
@@ -60,16 +66,16 @@ export default class Ship {
     }
 
     public rotateLeft(): void {
-        this.rotationDegrees = (this.rotationDegrees - 0.2)
+        this.rotationDegrees = (this.rotationDegrees - 0.05)
     }
 
     public rotateRight(): void {
-        this.rotationDegrees = (this.rotationDegrees + 0.2)
+        this.rotationDegrees = (this.rotationDegrees + 0.05)
     }
 
     public accelerate(isAccelerating: boolean): void {
         if(isAccelerating) {
-            this.acceleration = 0.01;
+            this.acceleration = 0.03;
             this.accelerationDirection = this.rotationDegrees;
         } else {
             this.acceleration = 0;

@@ -1,4 +1,5 @@
 import Ship from './ship';
+import {keyDownListener, keyUpListener} from './controls';
 
 export default class Game {
     private canvas: HTMLCanvasElement;
@@ -9,8 +10,8 @@ export default class Game {
     private ship: Ship = new Ship();
 
     constructor() {
-        document.addEventListener('keydown', this.keyDownListener)
-        document.addEventListener('keyup', this.keyUpListener)
+        document.addEventListener('keydown', keyDownListener)
+        document.addEventListener('keyup', keyUpListener)
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
         this.canvas.width = this.width;
         this.canvas.height = this.height;
@@ -24,23 +25,5 @@ export default class Game {
 
         this.ship.update();
         this.ship.render(this.ctx);
-    }
-
-    private keyDownListener = (event: KeyboardEvent) => {
-        if (event.key === 'ArrowUp' || event.key === 'w') {
-            this.ship.accelerate(true);
-        }
-        if(event.key === 'ArrowLeft' || event.key === 'a') {
-            this.ship.rotateLeft();
-        }
-        if (event.key === 'ArrowRight' || event.key === 'd') {
-            this.ship.rotateRight();
-        }
-    }
-
-    private keyUpListener = (event: KeyboardEvent) => {
-        if (event.key === 'ArrowUp' || event.key === 'w') {
-            this.ship.accelerate(false);
-        }
     }
 }
