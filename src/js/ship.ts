@@ -43,14 +43,22 @@ export default class Ship {
         this.xVelocity += this.xAcceleration;
         this.yVelocity += this.yAcceleration;
 
-        this.x = this.x+ this.xVelocity;
+        this.x += this.xVelocity;
         this.y += this.yVelocity;
 
+        // apply friction
+        this.xVelocity *= 0.99;
+        this.yVelocity *= 0.99;
+        if(this.xVelocity < 0.01 && this.xVelocity > -0.01) this.xVelocity = 0;
+        if(this.yVelocity < 0.01 && this.yVelocity > -0.01) this.yVelocity = 0;
+
+        // apply max velocity limit
         if (this.xVelocity > 3) this.xVelocity = 3;
         if (this.yVelocity > 3) this.yVelocity = 3;
         if (this.xVelocity < -3) this.xVelocity = -3;
         if (this.yVelocity < -3) this.yVelocity = -3;
 
+        // appear on the other side of the screen
         if (this.x <= 0) {
             this.x = 799;
         }
