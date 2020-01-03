@@ -17,6 +17,9 @@ export const keyDownListener = (event: KeyboardEvent) => {
     if (event.key === 'ArrowRight' || event.key === 'd') {
         KEY_STATE.add(Key.Right)
     }
+    if (event.key === ' ') {
+        KEY_STATE.add(Key.Shoot)
+    }
 }
 
 export const keyUpListener = (event: KeyboardEvent) => {
@@ -28,5 +31,8 @@ export const keyUpListener = (event: KeyboardEvent) => {
     }
     if (event.key === 'ArrowRight' || event.key === 'd') {
         KEY_STATE.delete(Key.Right)
+    }
+    if (event.key === ' ') {
+        KEY_STATE.delete(Key.Shoot)
     }
 }

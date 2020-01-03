@@ -1,5 +1,6 @@
 import Ship from './ship';
 import Asteroid from './asteroid';
+import Bullet from './bullet';
 import { keyDownListener, keyUpListener } from './controls';
 
 const WIDTH = 800;
@@ -13,6 +14,7 @@ export default class Game {
 
     private ship: Ship = new Ship();
     private asteroids: Asteroid[] = []
+    private bullet: Bullet = new Bullet();
 
     private lastFrame: number = 0;
     private fpsTime: number = 0;
@@ -43,6 +45,10 @@ export default class Game {
 
         this.ship.update();
         this.ship.render(this.ctx);
+
+        this.bullet.update();
+        this.bullet.render(this.ctx);
+
 
         this.asteroids.forEach(a => {
             a.update();
