@@ -1,4 +1,5 @@
 import Ship from './ship';
+import Asteroid from './asteroid';
 import { keyDownListener, keyUpListener } from './controls';
 
 const WIDTH = 800;
@@ -10,8 +11,8 @@ export default class Game {
     private height: number = HEIGHT;
     private width: number = WIDTH;
 
-
     private ship: Ship = new Ship();
+    private asteroids: Asteroid[] = []
 
     private lastFrame: number = 0;
     private fpsTime: number = 0;
@@ -28,6 +29,8 @@ export default class Game {
     public init(): void {
         document.addEventListener('keydown', keyDownListener)
         document.addEventListener('keyup', keyUpListener)
+
+        this.asteroids = [new Asteroid(), new Asteroid(), new Asteroid()]
     }
 
     public update(deltaTime: number): void {
@@ -40,5 +43,10 @@ export default class Game {
 
         this.ship.update();
         this.ship.render(this.ctx);
+
+        this.asteroids.forEach(a => {
+            a.update();
+            a.render(this.ctx);
+        })
     }
 }
