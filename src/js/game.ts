@@ -1,6 +1,6 @@
-import Ship from './ship';
-import Asteroid from './asteroid';
-import Bullet from './bullet';
+import Ship from './entities/ship';
+import Asteroid from './entities/asteroid';
+import Bullet from './entities/bullet';
 import { keyDownListener, keyUpListener } from './controls';
 
 const WIDTH = 800;
