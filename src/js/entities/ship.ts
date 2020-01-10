@@ -4,15 +4,15 @@ import Vector2D from '../utils/vector2d';
 import { Key, KEY_STATE } from '../controls';
 
 export default class Ship extends Entity {
+    public bullets: Bullet[];
     private acceleration: Vector2D;
     private thrust: number = 0;
-    private bullets: Bullet[];
     private reloadTimer: number = 0;
 
     constructor() {
-        super(new Vector2D(100, 100), new Vector2D(0, 0), 0);
+        super(new Vector2D(100, 100), 15, new Vector2D(0, 0), 0);
         this.acceleration = new Vector2D(0, 0);
-        this.bullets = [new Bullet(), new Bullet(), new Bullet(), new Bullet()];
+        this.bullets = [new Bullet(this), new Bullet(this), new Bullet(this), new Bullet(this)];
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
@@ -64,8 +64,6 @@ export default class Ship extends Entity {
         if (this.velocity.y > 4) this.velocity.y = 4;
         if (this.velocity.x < -4) this.velocity.x = -4;
         if (this.velocity.y < -4) this.velocity.y = -4;
-
-        this.bullets.forEach(b => b.update());
 
         this.handleAreaBoundsCheck();
     }

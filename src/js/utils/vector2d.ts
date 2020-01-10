@@ -17,6 +17,11 @@ export default class Vector2D {
         this.y += point.y;
     }
 
+    public subtract(point: Vector2D): void {
+        this.x -= point.x;
+        this.y -= point.y;
+    }
+
     public distanceTo(point: Vector2D) {
         const a = (this.x - point.x);
         const b = (this.y - point.y);

@@ -1,10 +1,25 @@
 import Entity from "./entity";
 import Vector2D from "../utils/vector2d";
 
+export enum AsteroidCategory {
+    Small,
+    Medium,
+    Large,
+}
+
+const ASTEROID_PROPERTIES = {
+    Small : 'foo',
+    Medium : 'bar',
+    Large : 'baz',
+}
+
 export default class Asteroid extends Entity {
 
-    constructor() {
-        super(new Vector2D(500, 500), new Vector2D(1, 1), Math.floor(Math.random() * 360));
+    public readonly category: AsteroidCategory;
+
+    constructor(x: number, y:number, category: AsteroidCategory) {
+        super(new Vector2D(x, y), 60, new Vector2D(1, 1), Math.floor(Math.random() * 360));
+        this.category = category;
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
