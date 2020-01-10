@@ -47,8 +47,11 @@ export default class Game {
             a.update();
         })
         this.ship.bullets.forEach(b => b.update());
-
         this.handleCollisions();
+
+        if(this.asteroids.length === 0)
+            this.asteroids.push(new Asteroid(Math.random()*WIDTH, Math.random()*HEIGHT, AsteroidCategory.Large));
+
 
         this.ship.render(this.ctx);
         this.ship.bullets.forEach(b => b.render(this.ctx));

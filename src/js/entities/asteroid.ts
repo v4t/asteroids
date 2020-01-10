@@ -7,18 +7,28 @@ export enum AsteroidCategory {
     Large,
 }
 
-const ASTEROID_PROPERTIES = {
-    Small : 'foo',
-    Medium : 'bar',
-    Large : 'baz',
-}
-
 export default class Asteroid extends Entity {
 
     public readonly category: AsteroidCategory;
 
-    constructor(x: number, y:number, category: AsteroidCategory) {
-        super(new Vector2D(x, y), 60, new Vector2D(1, 1), Math.floor(Math.random() * 360));
+    constructor(x: number, y: number, category: AsteroidCategory) {
+        let size: number;
+        let velocity: Vector2D;
+        switch (category) {
+            case AsteroidCategory.Small:
+                size = 20;
+                velocity = new Vector2D(1.3, 1.3);
+                break;
+                case AsteroidCategory.Medium:
+                size = 40;
+                velocity = new Vector2D(1.15, 1.15);
+                break;
+            case AsteroidCategory.Large:
+            default:
+                size = 60;
+                velocity = new Vector2D(1,1);
+        }
+        super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * 360));
         this.category = category;
     }
 
@@ -27,7 +37,7 @@ export default class Asteroid extends Entity {
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, 60, 0, Math.PI * 2);
+        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
         ctx.moveTo(this.position.x, this.position.y);
 
         ctx.stroke();
