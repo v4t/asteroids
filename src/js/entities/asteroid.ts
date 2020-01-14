@@ -17,17 +17,20 @@ export default class Asteroid extends Entity {
         switch (category) {
             case AsteroidCategory.Small:
                 size = 20;
-                velocity = new Vector2D(1.3, 1.3);
+                let i = Math.random() * (1.7 - 0.3) + 0.3
+                velocity = new Vector2D(i, i);
                 break;
-                case AsteroidCategory.Medium:
+            case AsteroidCategory.Medium:
+                let j = Math.random() * (1.35 - 0.3) + 0.3
                 size = 40;
-                velocity = new Vector2D(1.15, 1.15);
+                velocity = new Vector2D(j, j);
                 break;
             case AsteroidCategory.Large:
             default:
                 size = 60;
-                velocity = new Vector2D(1,1);
-        }
+                let k = Math.random() * (1 - 0.3) + 0.3
+                velocity = new Vector2D(k, k);
+         }
         super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * 360));
         this.category = category;
     }

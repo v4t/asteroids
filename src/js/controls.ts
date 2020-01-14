@@ -7,6 +7,13 @@ export enum Key {
 
 export const KEY_STATE = new Set<Key>();
 
+export function clearKeyState(): void {
+    KEY_STATE.delete(Key.Throttle)
+    KEY_STATE.delete(Key.Left)
+    KEY_STATE.delete(Key.Right)
+    KEY_STATE.delete(Key.Shoot)
+}
+
 export const keyDownListener = (event: KeyboardEvent) => {
     if (event.key === 'ArrowUp' || event.key === 'w') {
         KEY_STATE.add(Key.Throttle);

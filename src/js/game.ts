@@ -1,12 +1,14 @@
 import Ship from './entities/ship';
 import Asteroid, { AsteroidCategory } from './entities/asteroid';
 import Bullet from './entities/bullet';
-import { keyDownListener, keyUpListener } from './controls';
+import { keyDownListener, keyUpListener, clearKeyState } from './controls';
 
-const WIDTH = 800;
-const HEIGHT = 600;
+export const WIDTH = 700;
+export const HEIGHT = 700;
 
 export default class Game {
+    private level = 1;
+
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
     private height: number = HEIGHT;
@@ -28,10 +30,10 @@ export default class Game {
     }
 
     public init(): void {
-        document.addEventListener('keydown', keyDownListener)
-        document.addEventListener('keyup', keyUpListener)
+        document.addEventListener('keydown', keyDownListener);
+        document.addEventListener('keyup', keyUpListener);
 
-        this.asteroids = [new Asteroid(50, 50, AsteroidCategory.Large)]
+        this.spawnNewAsteroids(3);
     }
 
     public update(deltaTime: number): void {
@@ -42,6 +44,13 @@ export default class Game {
         this.ctx.fillStyle = '#020202';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
+        this.ship.render(this.ctx);
+        this.ship.bullets.forEach(b => b.render(this.ctx));
+        this.asteroids.forEach(a => {
+            a.render(this.ctx);
+        })
+
+        // update
         this.ship.update();
         this.asteroids.forEach(a => {
             a.update();
@@ -49,25 +58,44 @@ export default class Game {
         this.ship.bullets.forEach(b => b.update());
         this.handleCollisions();
 
-        if(this.asteroids.length === 0)
-            this.asteroids.push(new Asteroid(Math.random()*WIDTH, Math.random()*HEIGHT, AsteroidCategory.Large));
+        if (this.asteroids.length === 0) {
+            this.level++;
+            this.spawnNewAsteroids(this.level + 2);
+        }
+    }
 
+    private restart(): void {
+        clearKeyState();
+        this.ship = new Ship();
+        this.asteroids = [];
+        this.level = 1;
+        this.spawnNewAsteroids(3);
+    }
 
-        this.ship.render(this.ctx);
-        this.ship.bullets.forEach(b => b.render(this.ctx));
-        this.asteroids.forEach(a => {
-            a.render(this.ctx);
-        })
+    private spawnNewAsteroids(count: number): void {
+        for (let i = 0; i < count; i++) {
+            let x, y;
+            if(Math.random() > 0.5) {
+                x = Math.random() > 0.5 ? 0 : WIDTH;
+                y = Math.random() * HEIGHT;
+            } else {
+                x = Math.random() * WIDTH;
+                y = Math.random() > 0.5 ? 0 : HEIGHT;
+            }
+            this.asteroids.push(new Asteroid(x, y, AsteroidCategory.Large));
+        }
     }
 
     private handleCollisions(): void {
         this.asteroids.forEach((a, i) => {
             if (this.ship.intersectsWith(a)) {
-                console.log('*game over*');
+                alert('*GAME OVER*\nReached level ' + this.level);
+                this.level = 1;
+                this.restart();
+                return;
             }
             this.ship.bullets.forEach(b => {
                 if (b.isActive && b.intersectsWith(a)) {
-                    console.log('*boom*');
                     this.breakUpAsteroid(a, i);
                     b.isActive = false;
                 }
@@ -84,8 +112,8 @@ export default class Game {
             : AsteroidCategory.Small;
 
         this.asteroids.push(...[
-            new Asteroid(asteroid.x, asteroid.y, spawnCategory),
-            new Asteroid(asteroid.x, asteroid.y, spawnCategory),
+            new Asteroid(asteroid.x + 10, asteroid.y + 10, spawnCategory),
+            new Asteroid(asteroid.x - 10, asteroid.y - 10, spawnCategory),
         ]);
     }
 }

@@ -10,7 +10,7 @@ export default class Ship extends Entity {
     private reloadTimer: number = 0;
 
     constructor() {
-        super(new Vector2D(100, 100), 15, new Vector2D(0, 0), 0);
+        super(new Vector2D(400, 300), 15, new Vector2D(0, 0), 0);
         this.acceleration = new Vector2D(0, 0);
         this.bullets = [new Bullet(this), new Bullet(this), new Bullet(this), new Bullet(this)];
     }
