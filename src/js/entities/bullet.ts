@@ -9,7 +9,7 @@ export default class Bullet extends Entity {
     private ttl: number;
 
     constructor(source: Entity) {
-        super(new Vector2D(0,0), 2, new Vector2D(15 ,15 ), 0);
+        super(new Vector2D(0,0), 2, new Vector2D(15, 15), 0);
     }
 
     public fire(direction: number, x: number, y: number): void {

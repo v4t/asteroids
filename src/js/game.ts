@@ -1,6 +1,6 @@
 import Ship from './entities/ship';
 import Asteroid, { AsteroidCategory } from './entities/asteroid';
-import Bullet from './entities/bullet';
+import Ufo from './entities/ufo';
 import { keyDownListener, keyUpListener, clearKeyState } from './controls';
 
 export const WIDTH = 700;
@@ -16,6 +16,7 @@ export default class Game {
 
     private ship: Ship = new Ship();
     private asteroids: Asteroid[] = []
+    private ufos: Ufo[] = []
 
     private lastFrame: number = 0;
     private fpsTime: number = 0;
@@ -34,6 +35,7 @@ export default class Game {
         document.addEventListener('keyup', keyUpListener);
 
         this.spawnNewAsteroids(3);
+        this.ufos.push(new Ufo(this.ship)) ;
     }
 
     public update(deltaTime: number): void {
@@ -46,21 +48,27 @@ export default class Game {
 
         this.ship.render(this.ctx);
         this.ship.bullets.forEach(b => b.render(this.ctx));
-        this.asteroids.forEach(a => {
-            a.render(this.ctx);
-        })
+        this.asteroids.forEach(a => a.render(this.ctx));
+        this.ufos.forEach(u =>{
+            u.render(this.ctx);
+            u.bullets.forEach(b => b.render(this.ctx));
+        });
 
         // update
         this.ship.update();
-        this.asteroids.forEach(a => {
-            a.update();
-        })
+        this.asteroids.forEach(a => a.update());
+        this.ufos.forEach(u => {
+            u.update();
+            u.bullets.forEach(b => b.update());
+        });
         this.ship.bullets.forEach(b => b.update());
         this.handleCollisions();
 
         if (this.asteroids.length === 0) {
             this.level++;
             this.spawnNewAsteroids(this.level + 2);
+
+            this.ufos.push(new Ufo(this.ship));
         }
     }
 
@@ -100,7 +108,15 @@ export default class Game {
                     b.isActive = false;
                 }
             })
-        })
+        });
+        this.ufos.forEach((u, i) => {
+            this.ship.bullets.forEach(b => {
+                if (b.isActive && b.intersectsWith(u)) {
+                    this.ufos.splice(i, 1);
+                    b.isActive = false;
+                }
+            })
+        });
     }
 
     private breakUpAsteroid(asteroid: Asteroid, index: number): void {
