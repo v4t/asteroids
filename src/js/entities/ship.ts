@@ -26,11 +26,8 @@ export default class Ship extends Entity {
         ctx.moveTo(this.position.x, this.position.y);
         ctx.lineTo(toX, toY);
 
-
         ctx.stroke();
         ctx.closePath();
-
-        this.bullets.forEach(b => b.render(ctx));
     }
 
     public update(): void {

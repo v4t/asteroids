@@ -1,6 +1,7 @@
 import Ship from './entities/ship';
 import Asteroid, { AsteroidCategory } from './entities/asteroid';
 import Ufo from './entities/ufo';
+import UfoProjectile from './entities/ufo-projectile';
 import { keyDownListener, keyUpListener, clearKeyState } from './controls';
 
 export const WIDTH = 700;
@@ -15,8 +16,9 @@ export default class Game {
     private width: number = WIDTH;
 
     private ship: Ship = new Ship();
-    private asteroids: Asteroid[] = []
-    private ufos: Ufo[] = []
+    private asteroids: Asteroid[] = [];
+    private ufos: Ufo[] = [];
+    private ufoProjectiles: UfoProjectile[] = [];
 
     private lastFrame: number = 0;
     private fpsTime: number = 0;
@@ -35,7 +37,7 @@ export default class Game {
         document.addEventListener('keyup', keyUpListener);
 
         this.spawnNewAsteroids(3);
-        this.ufos.push(new Ufo(this.ship)) ;
+        this.ufos.push(new Ufo(this.ship));
     }
 
     public update(deltaTime: number): void {
@@ -51,15 +53,20 @@ export default class Game {
         this.asteroids.forEach(a => a.render(this.ctx));
         this.ufos.forEach(u =>{
             u.render(this.ctx);
-            u.bullets.forEach(b => b.render(this.ctx));
         });
+
+        this.ufoProjectiles.forEach(p => p.render(this.ctx));
+        this.ufoProjectiles.forEach(p => p.update());
+        this.ufoProjectiles = this.ufoProjectiles.filter(p => p.isActive);
 
         // update
         this.ship.update();
         this.asteroids.forEach(a => a.update());
         this.ufos.forEach(u => {
             u.update();
-            u.bullets.forEach(b => b.update());
+
+            if(u.isReadyToFire()) this.ufoProjectiles.push(u.fireProjectile());
+
         });
         this.ship.bullets.forEach(b => b.update());
         this.handleCollisions();
