@@ -9,7 +9,7 @@ export default class Bullet extends Entity {
     private ttl: number;
 
     constructor(source: Entity) {
-        super(new Vector2D(0,0), 2, new Vector2D(15, 15), 0);
+        super(new Vector2D(0,0), 2, new Vector2D(800, 800), 0);
     }
 
     public fire(direction: number, x: number, y: number): void {
@@ -30,13 +30,13 @@ export default class Bullet extends Entity {
         ctx.closePath();
     }
 
-    public update(): void {
+    public update(delta: number): void {
         if(!this.isActive) return;
         this.ttl -= 1;
         if(this.ttl <= 0) this.isActive = false;
 
-        this.position.x += (Math.cos(this.direction) * this.velocity.x);
-        this.position.y += (Math.sin(this.direction) * this.velocity.y);
+        this.position.x += (Math.cos(this.direction) * this.velocity.x * delta);
+        this.position.y += (Math.sin(this.direction) * this.velocity.y * delta);
 
         // appear on the other side of the screen
         this.handleAreaBoundsCheck();

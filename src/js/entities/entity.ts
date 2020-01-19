@@ -16,7 +16,7 @@ export default abstract class Entity {
 
     public abstract render(ctx: CanvasRenderingContext2D): void
 
-    public abstract update(): void
+    public abstract update(delta: number): void
 
     public get x() {
         return this.position.x;

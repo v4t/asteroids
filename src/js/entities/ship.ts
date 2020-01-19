@@ -16,7 +16,6 @@ export default class Ship extends Entity {
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        this.update();
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
@@ -30,20 +29,21 @@ export default class Ship extends Entity {
         ctx.closePath();
     }
 
-    public update(): void {
+    public update(delta: number): void {
         if (KEY_STATE.has(Key.Left)) this.rotateLeft();
         if (KEY_STATE.has(Key.Right)) this.rotateRight();
         if (KEY_STATE.has(Key.Shoot)) this.fire();
         if (KEY_STATE.has(Key.Throttle)) {
-            this.thrust = 0.04;
+            this.thrust = 7;
         } else {
             this.thrust = 0;
         }
 
         this.acceleration.add(new Vector2D(
-            Math.cos(this.direction) * this.thrust,
-            Math.sin(this.direction) * this.thrust
+            Math.cos(this.direction) * this.thrust * delta,
+            Math.sin(this.direction) * this.thrust * delta
         ))
+
         this.velocity.add(this.acceleration);
         this.position.add(this.velocity);
 
@@ -51,26 +51,29 @@ export default class Ship extends Entity {
         this.acceleration.y = 0;
 
         // apply friction
-        this.velocity.x *= 0.995;
-        this.velocity.y *= 0.995;
-        if (this.velocity.x < 0.01 && this.velocity.x > -0.01) this.velocity.x = 0;
-        if (this.velocity.y < 0.01 && this.velocity.y > -0.01) this.velocity.y = 0;
+        this.velocity.x *= 0.99;
+        this.velocity.y *= 0.99;
+        if(this.thrust === 0) {
+            if (this.velocity.x < delta && this.velocity.x > -delta) this.velocity.x = 0;
+            if (this.velocity.y < delta && this.velocity.y > -delta) this.velocity.y = 0;
+        }
 
         // apply maxvelocity  limit
-        if (this.velocity.x > 4) this.velocity.x = 4;
-        if (this.velocity.y > 4) this.velocity.y = 4;
-        if (this.velocity.x < -4) this.velocity.x = -4;
-        if (this.velocity.y < -4) this.velocity.y = -4;
+        const maxVel = 500 * delta;
+        if (this.velocity.x > maxVel) this.velocity.x = maxVel;
+        if (this.velocity.y > maxVel) this.velocity.y = maxVel;
+        if (this.velocity.x < -maxVel) this.velocity.x = -maxVel;
+        if (this.velocity.y < -maxVel) this.velocity.y = -maxVel;
 
         this.handleAreaBoundsCheck();
     }
 
     public rotateLeft(): void {
-        this.direction = (this.direction - 0.05)
+        this.direction = (this.direction - 0.1)
     }
 
     public rotateRight(): void {
-        this.direction = (this.direction + 0.05)
+        this.direction = (this.direction + 0.1)
     }
 
     public fire(): void {
@@ -81,7 +84,7 @@ export default class Ship extends Entity {
         const availableBullet = this.bullets.find(b => !b.isActive);
         if (availableBullet !== undefined) {
             availableBullet.fire(this.direction, this.position.x, this.position.y);
-            this.reloadTimer = 20;
+            this.reloadTimer = 10;
         }
     }
 }

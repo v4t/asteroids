@@ -37,11 +37,29 @@ export default class Game {
         document.addEventListener('keyup', keyUpListener);
 
         this.spawnNewAsteroids(3);
-        this.ufos.push(new Ufo(this.ship));
     }
 
     public update(deltaTime: number): void {
+        this.ship.update(deltaTime);
+        this.asteroids.forEach(a => a.update(deltaTime));
 
+        if (Math.random() < 0.01 && this.ufos.length < 2) {
+            this.ufos.push(new Ufo(this.ship));
+        }
+
+        this.ufos.forEach(u => {
+            u.update(deltaTime);
+            if (u.isReadyToFire()) this.ufoProjectiles.push(u.fireProjectile());
+        });
+        this.ufoProjectiles.forEach(p => p.update(deltaTime ));
+        this.ufoProjectiles = this.ufoProjectiles.filter(p => p.isActive);
+        this.ship.bullets.forEach(b => b.update(deltaTime));
+        // this.handleCollisions();
+
+        if (this.asteroids.length === 0) {
+            this.level++;
+            this.spawnNewAsteroids(this.level + 2);
+        }
     }
 
     public render(): void {
@@ -56,27 +74,7 @@ export default class Game {
         });
 
         this.ufoProjectiles.forEach(p => p.render(this.ctx));
-        this.ufoProjectiles.forEach(p => p.update());
-        this.ufoProjectiles = this.ufoProjectiles.filter(p => p.isActive);
 
-        // update
-        this.ship.update();
-        this.asteroids.forEach(a => a.update());
-        this.ufos.forEach(u => {
-            u.update();
-
-            if(u.isReadyToFire()) this.ufoProjectiles.push(u.fireProjectile());
-
-        });
-        this.ship.bullets.forEach(b => b.update());
-        this.handleCollisions();
-
-        if (this.asteroids.length === 0) {
-            this.level++;
-            this.spawnNewAsteroids(this.level + 2);
-
-            this.ufos.push(new Ufo(this.ship));
-        }
     }
 
     private restart(): void {
@@ -88,6 +86,12 @@ export default class Game {
     }
 
     private spawnNewAsteroids(count: number): void {
+
+        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Large));
+        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Medium));
+        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Small));
+        return;
+
         for (let i = 0; i < count; i++) {
             let x, y;
             if(Math.random() > 0.5) {

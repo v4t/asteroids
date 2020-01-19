@@ -13,30 +13,29 @@ export default class Asteroid extends Entity {
 
     constructor(x: number, y: number, category: AsteroidCategory) {
         let size: number;
-        let velocity: Vector2D;
+        let velocity: Vector2D; // pixels per second
         switch (category) {
             case AsteroidCategory.Small:
                 size = 20;
-                let i = Math.random() * (1.7 - 0.3) + 0.3
+                let i = Math.random() * 150 + 50
                 velocity = new Vector2D(i, i);
                 break;
             case AsteroidCategory.Medium:
-                let j = Math.random() * (1.35 - 0.3) + 0.3
+                let j = Math.random() * 100 + 50
                 size = 40;
                 velocity = new Vector2D(j, j);
                 break;
             case AsteroidCategory.Large:
             default:
                 size = 60;
-                let k = Math.random() * (1 - 0.3) + 0.3
+                let k = Math.random() * 50 + 50
                 velocity = new Vector2D(k, k);
          }
-        super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * 360));
+        super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * (2 * Math.PI)));
         this.category = category;
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        this.update();
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
@@ -47,9 +46,9 @@ export default class Asteroid extends Entity {
         ctx.closePath();
     }
 
-    public update(): void {
-        this.position.x += (Math.cos(this.direction * Math.PI / 180) * this.velocity.x);
-        this.position.y += (Math.sin(this.direction * Math.PI / 180) * this.velocity.y);
+    public update(delta: number): void {
+        this.position.x += (Math.cos(this.direction) * this.velocity.x * delta);
+        this.position.y += (Math.sin(this.direction) * this.velocity.y * delta);
 
         this.handleAreaBoundsCheck();
     }
