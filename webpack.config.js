@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/js/app.ts',
@@ -7,10 +8,10 @@ module.exports = {
         filename: "bundle.js",
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js'],
     },
     devServer: {
-        contentBase: './dist'
+        contentBase: './dist',
     },
     module: {
         rules: [
@@ -27,13 +28,16 @@ module.exports = {
                 use: [
                     "style-loader",
                     "css-loader"
-                ]
-            }
-        ]
+                ],
+            },
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html'
-        })
+        }),
+        new CopyWebpackPlugin([
+            { from: 'src/assets', to: 'assets' },
+        ]),
     ],
 }

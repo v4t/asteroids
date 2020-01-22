@@ -36,14 +36,14 @@ export default class Game {
         document.addEventListener('keydown', keyDownListener);
         document.addEventListener('keyup', keyUpListener);
 
-        this.spawnNewAsteroids(3);
+        this.spawnNewAsteroids(1);
     }
 
     public update(deltaTime: number): void {
         this.ship.update(deltaTime);
         this.asteroids.forEach(a => a.update(deltaTime));
 
-        if (Math.random() < 0.01 && this.ufos.length < 2) {
+        if (Math.random() < 0.001 && this.ufos.length < 2) {
             this.ufos.push(new Ufo(this.ship));
         }
 
@@ -74,7 +74,6 @@ export default class Game {
         });
 
         this.ufoProjectiles.forEach(p => p.render(this.ctx));
-
     }
 
     private restart(): void {
@@ -86,12 +85,6 @@ export default class Game {
     }
 
     private spawnNewAsteroids(count: number): void {
-
-        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Large));
-        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Medium));
-        this.asteroids.push(new Asteroid(0,0, AsteroidCategory.Small));
-        return;
-
         for (let i = 0; i < count; i++) {
             let x, y;
             if(Math.random() > 0.5) {

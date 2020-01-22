@@ -12,13 +12,17 @@ export default class Ufo extends Entity {
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = '#f9f9f9'
+        ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2);
         ctx.moveTo(this.position.x, this.position.y);
 
-        ctx.fill();
+        const img = new Image();
+        img.src = '../assets/ufo.png';
+        ctx.drawImage(img, this.x-15, this.y-15);
+
+        ctx.stroke();
         ctx.closePath();
     }
 

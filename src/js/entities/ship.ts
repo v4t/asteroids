@@ -16,17 +16,36 @@ export default class Ship extends Entity {
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
+        ctx.save();
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2);
-        const toX = (Math.round(this.position.x + (15 * Math.cos(this.direction))));
-        const toY = (Math.round(this.position.y + (15 * Math.sin(this.direction))));
-        ctx.moveTo(this.position.x, this.position.y);
-        ctx.lineTo(toX, toY);
-
+        // const toX = (Math.round(this.position.x + (15 * Math.cos(this.direction))));
+        // const toY = (Math.round(this.position.y + (15 * Math.sin(this.direction))));
+        // ctx.moveTo(this.position.x, this.position.y);
+        // ctx.lineTo(toX, toY);
         ctx.stroke();
         ctx.closePath();
+
+        // move to the middle of where we want to draw our image
+        ctx.translate(this.x, this.y);
+
+        // rotate around that point, converting our
+        // angle from degrees to radians
+        ctx.rotate(this.direction);
+
+        // draw it up and to the left by half the width
+        // and height of the image
+        const img = new Image();
+        img.src = '../assets/ship.png';
+        if(this.thrust > 0 && Math.random() > 0.5) {
+            ctx.drawImage(img, 31, 0, 31, 31, -15, -15, 31, 31);
+        } else {
+            ctx.drawImage(img, 0, 0, 31, 31, -15, -15, 31, 31);
+        }
+
+        ctx.restore();
     }
 
     public update(delta: number): void {
@@ -69,11 +88,11 @@ export default class Ship extends Entity {
     }
 
     public rotateLeft(): void {
-        this.direction = (this.direction - 0.1)
+        this.direction = (this.direction - 0.08)
     }
 
     public rotateRight(): void {
-        this.direction = (this.direction + 0.1)
+        this.direction = (this.direction + 0.08)
     }
 
     public fire(): void {
