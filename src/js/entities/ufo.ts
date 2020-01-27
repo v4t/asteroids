@@ -1,14 +1,23 @@
 import Entity from './entity';
 import Vector2D from '../utils/vector2d';
 import UfoProjectile from './ufo-projectile';
+import Sprite from '../utils/sprite';
+
+const SPRITE_SOURCE = '../assets/ufo.png';
+const SPRITE_FRAMES = 1;
+const FRAME_HEIGHT = 31;
+const FRAME_WIDTH = 31;
+
 
 export default class Ufo extends Entity {
     private readonly target: Entity;
+    private readonly sprite: Sprite;
     private reloadTimer = 0;
 
     constructor(target: Entity) {
         super(new Vector2D(100, 100), 15, new Vector2D(100, 100), 0);
         this.target = target;
+        this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
@@ -18,12 +27,10 @@ export default class Ufo extends Entity {
         ctx.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2);
         ctx.moveTo(this.position.x, this.position.y);
 
-        const img = new Image();
-        img.src = '../assets/ufo.png';
-        ctx.drawImage(img, this.x-15, this.y-15);
-
         ctx.stroke();
         ctx.closePath();
+
+        this.sprite.render(ctx, this.x, this.y);
     }
 
     public update(delta: number): void {

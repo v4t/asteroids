@@ -2,50 +2,46 @@ import Entity from './entity';
 import Bullet from './bullet';
 import Vector2D from '../utils/vector2d';
 import { Key, KEY_STATE } from '../controls';
+import Sprite from '../utils/sprite';
+
+const SPRITE_SOURCE = '../assets/ship.png';
+const SPRITE_FRAMES = 2;
+const FRAME_HEIGHT = 33;
+const FRAME_WIDTH = 33;
 
 export default class Ship extends Entity {
     public bullets: Bullet[];
     private acceleration: Vector2D;
     private thrust: number = 0;
     private reloadTimer: number = 0;
+    private readonly sprite: Sprite;
 
     constructor() {
-        super(new Vector2D(400, 300), 15, new Vector2D(0, 0), 0);
+        super(new Vector2D(400, 300), 16, new Vector2D(0, 0), 0);
         this.acceleration = new Vector2D(0, 0);
         this.bullets = [new Bullet(this), new Bullet(this), new Bullet(this), new Bullet(this)];
+        this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2);
-        // const toX = (Math.round(this.position.x + (15 * Math.cos(this.direction))));
-        // const toY = (Math.round(this.position.y + (15 * Math.sin(this.direction))));
+        ctx.arc(this.position.x, this.position.y, 16, 0, Math.PI * 2);
+        // const toX = (Math.round(this.position.x + (16 * Math.cos(this.direction))));
+        // const toY = (Math.round(this.position.y + (16 * Math.sin(this.direction))));
         // ctx.moveTo(this.position.x, this.position.y);
         // ctx.lineTo(toX, toY);
         ctx.stroke();
         ctx.closePath();
 
-        // move to the middle of where we want to draw our image
-        ctx.translate(this.x, this.y);
-
-        // rotate around that point, converting our
-        // angle from degrees to radians
-        ctx.rotate(this.direction);
-
-        // draw it up and to the left by half the width
-        // and height of the image
-        const img = new Image();
-        img.src = '../assets/ship.png';
         if(this.thrust > 0 && Math.random() > 0.5) {
-            ctx.drawImage(img, 31, 0, 31, 31, -15, -15, 31, 31);
+            this.sprite.setFrame(1);
         } else {
-            ctx.drawImage(img, 0, 0, 31, 31, -15, -15, 31, 31);
+            this.sprite.setFrame(0);
         }
-
-        ctx.restore();
+        this.sprite.setRotation(this.direction);
+        this.sprite.render(ctx, this.x, this.y);
     }
 
     public update(delta: number): void {

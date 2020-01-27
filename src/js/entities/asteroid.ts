@@ -1,5 +1,11 @@
 import Entity from "./entity";
+import Sprite from '../utils/sprite';
 import Vector2D from "../utils/vector2d";
+
+const SPRITE_SOURCE = '../assets/asteroids.png';
+const SPRITE_FRAMES = 6;
+const FRAME_HEIGHT = 111;
+const FRAME_WIDTH = 111;
 
 export enum AsteroidCategory {
     Small,
@@ -9,63 +15,52 @@ export enum AsteroidCategory {
 
 export default class Asteroid extends Entity {
 
-    private rotation: number;
     public readonly category: AsteroidCategory;
-    private readonly sprite: HTMLImageElement;
+
+    private readonly sprite: Sprite;
 
     constructor(x: number, y: number, category: AsteroidCategory) {
         let size: number;
         let velocity: Vector2D; // pixels per second
+        let frame = 0;
         switch (category) {
             case AsteroidCategory.Small:
                 size = 20;
                 let i = Math.random() * 150 + 50
+                frame = Math.floor(Math.random() * 2) + 4
                 velocity = new Vector2D(i, i);
                 break;
             case AsteroidCategory.Medium:
+                frame = Math.floor(Math.random() * 2) + 2
                 let j = Math.random() * 100 + 50
                 size = 40;
                 velocity = new Vector2D(j, j);
                 break;
             case AsteroidCategory.Large:
             default:
+                frame = Math.floor(Math.random() * 2)
                 size = 60;
                 let k = Math.random() * 50 + 50
                 velocity = new Vector2D(k, k);
         }
         super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * (2 * Math.PI)));
-        this.sprite = new Image();
-        this.sprite.src = '../assets/asteroids.png'
+        this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
+        this.sprite.setFrame(frame);
         this.category = category;
-        this.rotation = 0;
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-
         ctx.strokeStyle = '#f9f9f9'
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
         ctx.moveTo(this.position.x, this.position.y);
 
-        // move to the middle of where we want to draw our image
-        ctx.translate(this.x, this.y);
-
-        // rotate around that point, converting our
-        // angle from degrees to radians
-        ctx.rotate(this.rotation * (Math.PI / 180));
-
-        // draw it up and to the left by half the width
-        // and height of the image
-        ctx.drawImage(this.sprite, -55, -55);
-
         ctx.stroke();
         ctx.closePath();
 
-        ctx.restore();
-        this.rotation += 0.2;
+        this.sprite.render(ctx, this.x, this.y);
+        this.sprite.rotate(0.002);
     }
 
     public update(delta: number): void {
