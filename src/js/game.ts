@@ -43,7 +43,7 @@ export default class Game {
         this.ship.update(deltaTime);
         this.asteroids.forEach(a => a.update(deltaTime));
 
-        if (Math.random() < 0.001 && this.ufos.length < 2) {
+        if (Math.random() < 0.1 && this.ufos.length < 2) {
             this.ufos.push(new Ufo(this.ship));
         }
 

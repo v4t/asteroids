@@ -35,7 +35,7 @@ export default class Ship extends Entity {
         ctx.stroke();
         ctx.closePath();
 
-        if(this.thrust > 0 && Math.random() > 0.5) {
+        if(this.thrust > 0) {
             this.sprite.setFrame(1);
         } else {
             this.sprite.setFrame(0);

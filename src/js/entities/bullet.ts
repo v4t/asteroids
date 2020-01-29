@@ -6,10 +6,12 @@ const BULLET_TTL = 30;
 export default class Bullet extends Entity {
     public isActive: boolean = false;
 
+    private source: Entity;
     private ttl: number;
 
     constructor(source: Entity) {
-        super(new Vector2D(0,0), 2, new Vector2D(800, 800), 0);
+        super(new Vector2D(0,0), 2, new Vector2D(1000, 1000), 0);
+        this.source = source;
     }
 
     public fire(direction: number, x: number, y: number): void {
