@@ -2,13 +2,13 @@ import Entity from "./entity";
 import Vector2D from "../utils/vector2d";
 import Sprite from "../utils/sprite";
 
-const PROJECTILE_TTL = 150;
+const PROJECTILE_TTL = 200;
+const PROJECTILE_SPEED = 150;
 const SPRITE_SOURCE = '../assets/ufo-projectile.png';
 const SPRITE_FRAMES = 5;
 const FRAME_HEIGHT = 15;
 const FRAME_WIDTH = 15;
 const FRAME_TIME = 3;
-
 
 export default class UfoProjectile extends Entity {
     public isActive: boolean = false;
@@ -18,7 +18,7 @@ export default class UfoProjectile extends Entity {
     private readonly sprite: Sprite;
 
     constructor(source: Vector2D, direction: number) {
-        super(new Vector2D(source.x, source.y), 5, new Vector2D(250, 250), direction);
+        super(new Vector2D(source.x, source.y), 5, new Vector2D(PROJECTILE_SPEED, PROJECTILE_SPEED), direction);
         this.isActive = true;
         this.ttl = PROJECTILE_TTL;
 

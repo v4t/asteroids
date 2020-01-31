@@ -14,7 +14,6 @@ export enum AsteroidCategory {
 }
 
 export default class Asteroid extends Entity {
-
     public readonly category: AsteroidCategory;
 
     private readonly sprite: Sprite;
@@ -43,7 +42,7 @@ export default class Asteroid extends Entity {
                 let k = Math.random() * 50 + 50
                 velocity = new Vector2D(k, k);
         }
-        super(new Vector2D(x, y), size, velocity, Math.floor(Math.random() * (2 * Math.PI)));
+        super(new Vector2D(x, y), size, velocity, Math.random() * (2 * Math.PI));
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
         this.sprite.setFrame(frame);
         this.category = category;
@@ -51,7 +50,7 @@ export default class Asteroid extends Entity {
 
     public render(ctx: CanvasRenderingContext2D): void {
         this.sprite.render(ctx, this.x, this.y);
-        this.sprite.rotate(0.002);
+        // this.sprite.rotate(0.002);
         this.drawDebugHelpers(ctx);
     }
 

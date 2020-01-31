@@ -14,8 +14,8 @@ export default class Ufo extends Entity {
     private readonly sprite: Sprite;
     private reloadTimer = 0;
 
-    constructor(target: Entity) {
-        super(new Vector2D(100, 100), 15, new Vector2D(100, 100), 0);
+    constructor(x: number, y: number, target: Entity) {
+        super(new Vector2D(x, y), 15, new Vector2D(100, 100), Math.random() * (2 * Math.PI));
         this.target = target;
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
@@ -30,7 +30,7 @@ export default class Ufo extends Entity {
         this.position.x += (Math.cos(this.direction) * this.velocity.x * delta);
         this.position.y += (Math.sin(this.direction) * this.velocity.y * delta);
 
-        if (Math.random() < 0.002) this.changeDirection();
+        if (Math.random() < 0.005) this.changeDirection();
         this.handleAreaBoundsCheck();
     }
 
@@ -52,7 +52,6 @@ export default class Ufo extends Entity {
         } else {
             this.direction -= modifier;
         }
-        this.direction %= 360;
     }
 
 }

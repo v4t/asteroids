@@ -16,8 +16,8 @@ export default class Ship extends Entity {
     private reloadTimer: number = 0;
     private readonly sprite: Sprite;
 
-    constructor() {
-        super(new Vector2D(400, 300), 16, new Vector2D(0, 0), 0);
+    constructor(x: number, y: number) {
+        super(new Vector2D(x, y), 16, new Vector2D(0, 0), 0);
         this.acceleration = new Vector2D(0, 0);
         this.bullets = [new Bullet(this), new Bullet(this), new Bullet(this), new Bullet(this)];
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
