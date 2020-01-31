@@ -24,17 +24,6 @@ export default class Ship extends Entity {
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        ctx.strokeStyle = '#f9f9f9'
-
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, 16, 0, Math.PI * 2);
-        // const toX = (Math.round(this.position.x + (16 * Math.cos(this.direction))));
-        // const toY = (Math.round(this.position.y + (16 * Math.sin(this.direction))));
-        // ctx.moveTo(this.position.x, this.position.y);
-        // ctx.lineTo(toX, toY);
-        ctx.stroke();
-        ctx.closePath();
-
         if(this.thrust > 0) {
             this.sprite.setFrame(1);
         } else {
@@ -42,6 +31,8 @@ export default class Ship extends Entity {
         }
         this.sprite.setRotation(this.direction);
         this.sprite.render(ctx, this.x, this.y);
+
+        this.drawDebugHelpers(ctx);
     }
 
     public update(delta: number): void {

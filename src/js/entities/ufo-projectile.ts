@@ -27,20 +27,15 @@ export default class UfoProjectile extends Entity {
 
     public render(ctx: CanvasRenderingContext2D): void {
         if (!this.isActive) return;
-        // ctx.fillStyle = '#ff6e33'
-
-        // ctx.beginPath();
-        // ctx.arc(this.position.x, this.position.y, 5, 0, Math.PI * 2);
-        // ctx.fill();
-        // ctx.closePath();
 
         this.sprite.render(ctx, this.x, this.y);
-        if(this.frameTimeRemaining <= 0) {
-                this.sprite.setNextFrame();
-                this.frameTimeRemaining = FRAME_TIME;
-           } else {
-               this.frameTimeRemaining--;
-           }
+        if (this.frameTimeRemaining <= 0) {
+            this.sprite.setNextFrame();
+            this.frameTimeRemaining = FRAME_TIME;
+        } else {
+            this.frameTimeRemaining--;
+        }
+        this.drawDebugHelpers(ctx);
     }
 
     public update(delta: number): void {

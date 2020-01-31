@@ -21,16 +21,8 @@ export default class Ufo extends Entity {
     }
 
     public render(ctx: CanvasRenderingContext2D): void {
-        ctx.strokeStyle = '#f9f9f9'
-
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2);
-        ctx.moveTo(this.position.x, this.position.y);
-
-        ctx.stroke();
-        ctx.closePath();
-
         this.sprite.render(ctx, this.x, this.y);
+        this.drawDebugHelpers(ctx);
     }
 
     public update(delta: number): void {

@@ -4,6 +4,7 @@ import Ufo from './entities/ufo';
 import UfoProjectile from './entities/ufo-projectile';
 import { keyDownListener, keyUpListener, clearKeyState } from './controls';
 
+export const DEBUG = false;
 export const WIDTH = 700;
 export const HEIGHT = 700;
 

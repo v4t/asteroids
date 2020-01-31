@@ -1,5 +1,5 @@
 import Vector2D from "../utils/vector2d";
-import { WIDTH, HEIGHT } from '../game';
+import { WIDTH, HEIGHT, DEBUG } from '../game';
 
 export default abstract class Entity {
     public readonly radius: number;
@@ -48,5 +48,19 @@ export default abstract class Entity {
         if (this.position.y >= HEIGHT) {
             this.position.y = 1;
         }
+    }
+
+    protected drawDebugHelpers(ctx: CanvasRenderingContext2D) {
+        if(!DEBUG) return;
+
+        ctx.strokeStyle = '#f9f9f9'
+        ctx.beginPath();
+        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+        const toX = (Math.round(this.position.x + (this.radius * Math.cos(this.direction))));
+        const toY = (Math.round(this.position.y + (this.radius * Math.sin(this.direction))));
+        ctx.moveTo(this.position.x, this.position.y);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+        ctx.closePath();
     }
 }
