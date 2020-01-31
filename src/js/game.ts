@@ -46,7 +46,7 @@ export default class Game {
     }
 
     public update(deltaTime: number): void {
-        if(!this.gameOver){
+        if (!this.gameOver) {
             this.ship.update(deltaTime);
             this.ship.bullets.forEach(b => b.update(deltaTime));
         }
@@ -75,7 +75,7 @@ export default class Game {
         this.ctx.fillStyle = '#020202';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        if(!this.gameOver) {
+        if (!this.gameOver) {
             this.ship.render(this.ctx);
             this.ship.bullets.forEach(b => b.render(this.ctx));
         }
@@ -88,6 +88,7 @@ export default class Game {
     }
 
     private spawnNewUfo(): void {
+        if (this.gameOver) return;
         const position = this.getNewSpawnPosition();
         this.ufos.push(new Ufo(position.x, position.y, this.ship));
     }
@@ -114,55 +115,69 @@ export default class Game {
     }
 
     private handleCollisions(): void {
-        if(this.gameOver) return;
-        this.asteroids.forEach((a, i) => {
-            if (this.ship.intersectsWith(a)) {
-                this.endGame();
-                return;
-            }
-            this.ship.bullets.forEach(b => {
-                if (b.isActive && b.intersectsWith(a)) {
-                    this.breakAsteroid(a, i);
-                    b.isActive = false;
-                }
-            })
-            this.ufos.forEach((u, j) => {
-                if (u.intersectsWith(a)) {
-                    this.ufos.splice(j, 1);
-                    this.breakAsteroid(a, i);
-                }
-            });
-            this.ufoProjectiles.forEach(up => {
-                if (up.intersectsWith(a)) {
-                    this.breakAsteroid(a, i);
-                    up.isActive = false;
-                }
-            })
-        });
-        this.ufos.forEach((u, i) => {
-            this.ship.bullets.forEach(b => {
-                if (b.isActive && b.intersectsWith(u)) {
-                    this.ufos.splice(i, 1);
-                    this.createExplosion(u.x, u.y);
-                    b.isActive = false;
-                }
-            })
-            if (u.intersectsWith(this.ship)) {
-                this.endGame();
-                return;
-            }
-        });
+        if (this.gameOver) return;
+        this.handleBulletCollisions();
+        this.handleUfoProjectileCollisions();
+        this.handleUfoCollisions();
+        this.handleShipCollisions();
+    }
 
-        this.ufoProjectiles.forEach(up => {
-            if (up.isActive && up.intersectsWith(this.ship)) {
+    private handleBulletCollisions(): void {
+        for (const bullet of this.ship.bullets) {
+            if (!bullet.isActive) continue;
+
+            const asteroidIndex = this.asteroids.findIndex(a => a.intersectsWith(bullet));
+            if (asteroidIndex >= 0) {
+                bullet.isActive = false;
+                this.splitAsteroid(asteroidIndex);
+            }
+            const ufoIndex = this.ufos.findIndex(u => u.intersectsWith(bullet));
+            if (ufoIndex >= 0) {
+                this.createExplosion(this.ufos[ufoIndex].x, this.ufos[ufoIndex].y);
+                this.ufos.splice(ufoIndex, 1);
+                bullet.isActive = false;
+            }
+        }
+    }
+
+    private handleUfoProjectileCollisions(): void {
+        for (const projectile of this.ufoProjectiles) {
+            if (!projectile.isActive) continue;
+
+            const asteroidIndex = this.asteroids.findIndex(a => a.intersectsWith(projectile));
+            if (asteroidIndex >= 0) {
+                projectile.isActive = false;
+                this.splitAsteroid(asteroidIndex);
+            }
+            if (projectile.intersectsWith(this.ship)) {
                 this.endGame();
                 return;
+            }
+        }
+    }
+
+    private handleShipCollisions(): void {
+        const ufoCollisionFound = this.ufos.some(u => u.intersectsWith(this.ship));
+        const asteroidCollisionFound = this.asteroids.some(u => u.intersectsWith(this.ship));
+        if (ufoCollisionFound || asteroidCollisionFound) {
+            this.endGame();
+        }
+    }
+
+    private handleUfoCollisions(): void {
+        this.ufos.forEach((ufo, indexAt) => {
+            const asteroidIndex = this.asteroids.findIndex(a => a.intersectsWith(ufo));
+            if (asteroidIndex >= 0) {
+                this.ufos.splice(indexAt, 1);
+                this.splitAsteroid(asteroidIndex);
             }
         })
     }
 
-    private breakAsteroid(asteroid: Asteroid, index: number): void {
-        this.asteroids.splice(index, 1);
+    private splitAsteroid(indexAt: number): void {
+        const asteroid = this.asteroids[indexAt];
+        this.createExplosion(asteroid.x, asteroid.y);
+        this.asteroids.splice(indexAt, 1);
         if (asteroid.category === AsteroidCategory.Small) return;
 
         const spawnCategory = asteroid.category === AsteroidCategory.Large
@@ -173,7 +188,6 @@ export default class Game {
             new Asteroid(asteroid.x + 10, asteroid.y + 10, spawnCategory),
             new Asteroid(asteroid.x - 10, asteroid.y - 10, spawnCategory),
         ]);
-        this.createExplosion(asteroid.x, asteroid.y);
     }
 
     private createExplosion(x: number, y: number): void {

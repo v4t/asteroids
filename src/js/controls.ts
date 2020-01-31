@@ -40,6 +40,7 @@ export const keyUpListener = (event: KeyboardEvent) => {
         KEY_STATE.delete(Key.Right)
     }
     if (event.key === ' ') {
-        KEY_STATE.delete(Key.Shoot)
+        setTimeout(function () { KEY_STATE.delete(Key.Shoot) }, 50);
+        // KEY_STATE.delete(Key.Shoot)
     }
 }
