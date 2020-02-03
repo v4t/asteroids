@@ -7,6 +7,11 @@ import Vector2D from './utils/vector2d';
 import { ShrapnelParticle, createAnimation, updateParticle, renderParticle } from './utils/shrapnel-animation';
 import { WIDTH, HEIGHT, SCREEN_BACKGROUND_COLOR } from './constants';
 
+export interface GameStats {
+    readonly level: number;
+    readonly points: number;
+}
+
 export default class Game {
     private level: number = 1;
     private gameOver: boolean = false;
@@ -32,6 +37,13 @@ export default class Game {
 
     public hasEnded(): boolean {
         return this.gameOver;
+    }
+
+    public getGameStats(): GameStats {
+        return {
+            level: this.level,
+            points: 0
+        };
     }
 
     public init(): void {

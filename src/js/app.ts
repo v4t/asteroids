@@ -2,12 +2,15 @@ declare var require: any;
 
 require('../css/index.css');
 
-import Game from './game';
+import Game, { GameStats } from './game';
 import { DEBUG } from './constants';
 
 class App {
     private game: Game;
+
     private gameOverMenu: HTMLElement;
+    private levelResult: HTMLElement;
+    private scoreResult: HTMLElement;
     private newGameBtn: HTMLElement;
 
     private lastFrame: number;
@@ -16,13 +19,17 @@ class App {
     private frameCount = 0;
     private fps = 0;
 
-    constructor(game: Game, gameOverMenu: HTMLElement, newGameBtn: HTMLElement) {
+    constructor(game: Game) {
         this.game = game;
-        this.gameOverMenu = gameOverMenu;
-        this.newGameBtn = newGameBtn;
     }
 
     public setup(): void {
+        this.gameOverMenu = document.getElementById('gameOver');
+        this.newGameBtn = document.getElementById('gameOver');
+        this.levelResult = document.getElementById('levelResult');
+        this.scoreResult = document.getElementById('scoreResult');
+        this.newGameBtn.addEventListener('click', () => this.restart());
+
         this.game.init();
         this.lastFrame = Date.now();
         this.gameLoop();
@@ -52,7 +59,7 @@ class App {
 
         this.game.update(deltaTime);
         this.game.render();
-        if(this.game.hasEnded() && this.menuIsHidden()) {
+        if (this.game.hasEnded() && this.menuIsHidden()) {
             this.showGameOverMenu();
         }
     }
@@ -61,19 +68,19 @@ class App {
         return this.gameOverMenu.classList.contains('hide-menu');
     }
 
-    private showGameOverMenu(): void {
-        this.gameOverMenu.classList.remove('hide-menu');
-    }
-
     private hideGameOverMenu(): void {
         this.gameOverMenu.classList.add('hide-menu');
+    }
+
+    private showGameOverMenu(): void {
+        const stats = this.game.getGameStats();
+        this.levelResult.textContent = `You reached level ${stats.level}.`;
+        this.scoreResult.textContent =  `Final score was ${stats.points}.`;
+        this.gameOverMenu.classList.remove('hide-menu');
     }
 }
 
 window.onload = () => {
-    const gameMenu = document.getElementById('gameOver');
-    const newGameBtn= document.getElementById('newGameBtn');
-    const app = new App(new Game(), gameMenu, newGameBtn);
+    const app = new App(new Game());
     app.setup();
-    newGameBtn.addEventListener('click', () => app.restart());
 }
