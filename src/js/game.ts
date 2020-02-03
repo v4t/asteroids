@@ -5,10 +5,7 @@ import Ufo from './entities/ufo';
 import UfoProjectile from './entities/ufo-projectile';
 import Vector2D from './utils/vector2d';
 import { ShrapnelParticle, createAnimation, updateParticle, renderParticle } from './utils/shrapnel-animation';
-
-export const DEBUG = false;
-export const WIDTH = 700;
-export const HEIGHT = 700;
+import { WIDTH, HEIGHT, SCREEN_BACKGROUND_COLOR } from './constants';
 
 export default class Game {
     private level: number = 1;
@@ -16,20 +13,15 @@ export default class Game {
 
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private height: number = HEIGHT;
     private width: number = WIDTH;
+    private height: number = HEIGHT;
 
-
-    private ship: Ship = new Ship(WIDTH / 2, HEIGHT / 2);
+    private ship: Ship;
     private asteroids: Asteroid[] = [];
     private ufos: Ufo[] = [];
     private ufoProjectiles: UfoProjectile[] = [];
     private shrapnelParticles: ShrapnelParticle[] = [];
-
-    private lastFrame: number = 0;
-    private fpsTime: number = 0;
-    private frameCount: number = 0;
-    private fps: number = 0;
+    private ufoSpawnTimer = 60;
 
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
@@ -38,10 +30,26 @@ export default class Game {
         this.ctx = this.canvas.getContext("2d");
     }
 
+    public hasEnded(): boolean {
+        return this.gameOver;
+    }
+
     public init(): void {
         document.addEventListener('keydown', keyDownListener);
         document.addEventListener('keyup', keyUpListener);
 
+        this.ship = new Ship(WIDTH / 2, HEIGHT / 2);
+        this.spawnNewAsteroids(3);
+    }
+
+    public restart(): void {
+        clearKeyState();
+        this.gameOver = false;
+        this.ship = new Ship(WIDTH / 2, HEIGHT / 2);
+        this.asteroids = [];
+        this.ufos = [];
+        this.ufoProjectiles = [];
+        this.level = 1;
         this.spawnNewAsteroids(3);
     }
 
@@ -52,27 +60,29 @@ export default class Game {
         }
         this.asteroids.forEach(a => a.update(deltaTime));
 
-        if (Math.random() < 0.001 && this.ufos.length < this.level) {
+        if (this.ufoSpawnTimer <= 0 && this.asteroids.length > 0 && Math.random() < 0.002 && this.ufos.length < this.level) {
             this.spawnNewUfo();
+            this.ufoSpawnTimer = 60;
         }
-
         this.ufos.forEach(u => {
             u.update(deltaTime);
             if (u.isReadyToFire()) this.ufoProjectiles.push(u.fireProjectile());
         });
         this.ufoProjectiles.forEach(p => p.update(deltaTime));
         this.ufoProjectiles = this.ufoProjectiles.filter(p => p.isActive);
+
         this.handleCollisions();
 
-        if (this.asteroids.length === 0) {
+        if (this.asteroids.length === 0 && this.ufos.length === 0) {
             this.level++;
             this.spawnNewAsteroids(this.level + 2);
         }
         this.shrapnelParticles.forEach(i => updateParticle(deltaTime, i));
+        this.ufoSpawnTimer--;
     }
 
     public render(): void {
-        this.ctx.fillStyle = '#020202';
+        this.ctx.fillStyle = SCREEN_BACKGROUND_COLOR;
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         if (!this.gameOver) {
@@ -201,13 +211,4 @@ export default class Game {
         // this.restart();
     }
 
-    private restart(): void {
-        clearKeyState();
-        this.ship = new Ship(WIDTH / 2, HEIGHT / 2);
-        this.asteroids = [];
-        this.ufos = [];
-        this.ufoProjectiles = [];
-        this.level = 1;
-        this.spawnNewAsteroids(3);
-    }
 }

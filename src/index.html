@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="title" content="Asteroids">
-    <meta name=”description” content="Classic asteroids game.">
-    <body>
-        <div class="container">
-            <h1 style="color: #35524A">Asteroids</h1>
-            <canvas id="canvas" style="border-style: solid; border-width: 1px; border-color: #35524A;"></canvas>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Asteroids">
+<meta name=”description” content="Classic asteroids game.">
+
+<body>
+    <div class="container">
+            <canvas id="canvas"></canvas>
+            <div id="gameOver" class="game-over-menu hide-menu">
+                 <table style="width: 100%">
+                    <tr>
+                        <td>
+                            <p class="score-text" id="levelResult">
+                                You reached level 7.
+                            </p>
+                            <p class="score-text" id="scoreResult">
+                                Final score was: 19004
+                            </p>
+                        </td>
+                        <td style="float:right; margin-top: 40px; margin-right: 10px;">
+                            <button id="newGameBtn" class="new-game-btn">New game</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

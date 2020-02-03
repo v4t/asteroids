@@ -3,25 +3,34 @@ declare var require: any;
 require('../css/index.css');
 
 import Game from './game';
-
+import { DEBUG } from './constants';
 
 class App {
+    private game: Game;
+    private gameOverMenu: HTMLElement;
+    private newGameBtn: HTMLElement;
+
     private lastFrame: number;
     private fpsInterval: number;
-    private _game: Game;
-
     private fpsTime = 0;
     private frameCount = 0;
     private fps = 0;
 
-    constructor(game: Game) {
-        this._game = game;
+    constructor(game: Game, gameOverMenu: HTMLElement, newGameBtn: HTMLElement) {
+        this.game = game;
+        this.gameOverMenu = gameOverMenu;
+        this.newGameBtn = newGameBtn;
     }
 
     public setup(): void {
-        this._game.init();
+        this.game.init();
         this.lastFrame = Date.now();
         this.gameLoop();
+    }
+
+    public restart() {
+        this.game.restart();
+        this.hideGameOverMenu();
     }
 
     private gameLoop(): void {
@@ -32,7 +41,7 @@ class App {
         const deltaTime = elapsed / 1000;
         this.lastFrame = now - (elapsed & this.fpsInterval);
 
-        if(this.fpsTime > 0.25) {
+        if (DEBUG && this.fpsTime > 0.25) {
             console.log('FPS:', this.fps);
             this.fps = Math.round(this.frameCount / this.fpsTime)
             this.fpsTime = 0;
@@ -41,12 +50,30 @@ class App {
         this.fpsTime += deltaTime;
         this.frameCount++;
 
-        this._game.update(deltaTime);
-        this._game.render();
+        this.game.update(deltaTime);
+        this.game.render();
+        if(this.game.hasEnded() && this.menuIsHidden()) {
+            this.showGameOverMenu();
+        }
+    }
+
+    private menuIsHidden(): boolean {
+        return this.gameOverMenu.classList.contains('hide-menu');
+    }
+
+    private showGameOverMenu(): void {
+        this.gameOverMenu.classList.remove('hide-menu');
+    }
+
+    private hideGameOverMenu(): void {
+        this.gameOverMenu.classList.add('hide-menu');
     }
 }
 
 window.onload = () => {
-    let app = new App(new Game());
+    const gameMenu = document.getElementById('gameOver');
+    const newGameBtn= document.getElementById('newGameBtn');
+    const app = new App(new Game(), gameMenu, newGameBtn);
     app.setup();
+    newGameBtn.addEventListener('click', () => app.restart());
 }

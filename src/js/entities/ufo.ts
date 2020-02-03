@@ -8,7 +8,6 @@ const SPRITE_FRAMES = 1;
 const FRAME_HEIGHT = 31;
 const FRAME_WIDTH = 31;
 
-
 export default class Ufo extends Entity {
     private readonly target: Entity;
     private readonly sprite: Sprite;
@@ -33,7 +32,6 @@ export default class Ufo extends Entity {
         if (Math.random() < 0.005) this.changeDirection();
         this.handleAreaBoundsCheck();
     }
-
 
     public isReadyToFire(): boolean {
         return this.reloadTimer <= 0 && Math.random() < 0.006;

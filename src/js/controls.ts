@@ -24,7 +24,7 @@ export const keyDownListener = (event: KeyboardEvent) => {
     if (event.key === 'ArrowRight' || event.key === 'd') {
         KEY_STATE.add(Key.Right)
     }
-    if (event.key === ' ') {
+    if (event.key === ' ' || event.key === 's') {
         KEY_STATE.add(Key.Shoot)
     }
 }
@@ -40,6 +40,7 @@ export const keyUpListener = (event: KeyboardEvent) => {
         KEY_STATE.delete(Key.Right)
     }
     if (event.key === ' ') {
+        // Add delay since sometimes key press doesnt register
         setTimeout(function () { KEY_STATE.delete(Key.Shoot) }, 50);
         // KEY_STATE.delete(Key.Shoot)
     }
