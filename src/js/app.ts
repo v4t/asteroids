@@ -25,7 +25,7 @@ class App {
 
     public setup(): void {
         this.gameOverMenu = document.getElementById('gameOver');
-        this.newGameBtn = document.getElementById('gameOver');
+        this.newGameBtn = document.getElementById('newGameBtn');
         this.levelResult = document.getElementById('levelResult');
         this.scoreResult = document.getElementById('scoreResult');
         this.newGameBtn.addEventListener('click', () => this.restart());
@@ -75,7 +75,7 @@ class App {
     private showGameOverMenu(): void {
         const stats = this.game.getGameStats();
         this.levelResult.textContent = `You reached level ${stats.level}.`;
-        this.scoreResult.textContent =  `Final score was ${stats.points}.`;
+        this.scoreResult.textContent =  `Final score was ${stats.score}.`;
         this.gameOverMenu.classList.remove('hide-menu');
     }
 }

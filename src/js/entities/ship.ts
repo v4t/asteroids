@@ -17,8 +17,8 @@ export default class Ship extends Entity {
     private readonly sprite: Sprite;
 
     constructor(x: number, y: number) {
-        super(new Vector2D(x, y), 16, new Vector2D(0, 0), 0);
-        this.acceleration = new Vector2D(0, 0);
+        super({x, y}, 16, {x: 0, y: 0}, 0);
+        this.acceleration = {x: 0, y: 0};
         this.bullets = [new Bullet(this), new Bullet(this), new Bullet(this), new Bullet(this)];
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
@@ -45,13 +45,14 @@ export default class Ship extends Entity {
             this.thrust = 0;
         }
 
-        this.acceleration.add(new Vector2D(
-            Math.cos(this.direction) * this.thrust * delta,
-            Math.sin(this.direction) * this.thrust * delta
-        ))
+        this.acceleration.x += Math.cos(this.direction) * this.thrust * delta;
+        this.acceleration.y += Math.sin(this.direction) * this.thrust * delta;
 
-        this.velocity.add(this.acceleration);
-        this.position.add(this.velocity);
+        this.velocity.x += this.acceleration.x;
+        this.velocity.y += this.acceleration.y;
+
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
 
         this.acceleration.x = 0;
         this.acceleration.y = 0;
@@ -75,11 +76,11 @@ export default class Ship extends Entity {
     }
 
     public rotateLeft(): void {
-        this.direction = (this.direction - 0.08)
+        this.direction = (this.direction - 0.07)
     }
 
     public rotateRight(): void {
-        this.direction = (this.direction + 0.08)
+        this.direction = (this.direction + 0.07)
     }
 
     public fire(): void {

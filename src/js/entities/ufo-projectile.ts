@@ -18,7 +18,7 @@ export default class UfoProjectile extends Entity {
     private readonly sprite: Sprite;
 
     constructor(source: Vector2D, direction: number) {
-        super(new Vector2D(source.x, source.y), 5, new Vector2D(PROJECTILE_SPEED, PROJECTILE_SPEED), direction);
+        super({ x: source.x, y: source.y }, 5, { x: PROJECTILE_SPEED, y: PROJECTILE_SPEED }, direction);
         this.isActive = true;
         this.ttl = PROJECTILE_TTL;
 

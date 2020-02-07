@@ -14,7 +14,7 @@ export default class Ufo extends Entity {
     private reloadTimer = 0;
 
     constructor(x: number, y: number, target: Entity) {
-        super(new Vector2D(x, y), 15, new Vector2D(100, 100), Math.random() * (2 * Math.PI));
+        super({x, y}, 15, {x: 100, y: 100}, Math.random() * (2 * Math.PI));
         this.target = target;
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }

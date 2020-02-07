@@ -9,11 +9,12 @@ import { WIDTH, HEIGHT, SCREEN_BACKGROUND_COLOR } from './constants';
 
 export interface GameStats {
     readonly level: number;
-    readonly points: number;
+    readonly score: number;
 }
 
 export default class Game {
     private level: number = 1;
+    private score: number = 0;
     private gameOver: boolean = false;
 
     private canvas: HTMLCanvasElement;
@@ -42,7 +43,7 @@ export default class Game {
     public getGameStats(): GameStats {
         return {
             level: this.level,
-            points: 0
+            score: this.score
         };
     }
 
@@ -62,6 +63,7 @@ export default class Game {
         this.ufos = [];
         this.ufoProjectiles = [];
         this.level = 1;
+        this.score = 0;
         this.spawnNewAsteroids(3);
     }
 
@@ -124,15 +126,15 @@ export default class Game {
 
     private getNewSpawnPosition(): Vector2D {
         if (Math.random() > 0.5) {
-            return new Vector2D(
-                Math.random() > 0.5 ? 0 : WIDTH,
-                Math.random() * HEIGHT
-            )
+            return {
+                x: Math.random() > 0.5 ? 0 : WIDTH,
+                y: Math.random() * HEIGHT
+            }
         } else {
-            return new Vector2D(
-                Math.random() * WIDTH,
-                Math.random() > 0.5 ? 0 : HEIGHT
-            )
+            return {
+                x: Math.random() * WIDTH,
+                y: Math.random() > 0.5 ? 0 : HEIGHT
+            }
         }
     }
 
@@ -151,6 +153,7 @@ export default class Game {
             const asteroidIndex = this.asteroids.findIndex(a => a.intersectsWith(bullet));
             if (asteroidIndex >= 0) {
                 bullet.isActive = false;
+                this.score += 10 * this.asteroids[asteroidIndex].radius;
                 this.splitAsteroid(asteroidIndex);
             }
             const ufoIndex = this.ufos.findIndex(u => u.intersectsWith(bullet));
@@ -158,6 +161,7 @@ export default class Game {
                 this.createExplosion(this.ufos[ufoIndex].x, this.ufos[ufoIndex].y);
                 this.ufos.splice(ufoIndex, 1);
                 bullet.isActive = false;
+                this.score += 1000;
             }
         }
     }
@@ -218,9 +222,6 @@ export default class Game {
 
     private endGame(): void {
         this.createExplosion(this.ship.x, this.ship.y);
-        console.log(`*GAME OVER*\nReached level ${this.level}`);
         this.gameOver = true;
-        // this.restart();
     }
-
 }
