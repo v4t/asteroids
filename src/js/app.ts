@@ -2,7 +2,8 @@ declare var require: any;
 
 require('../css/index.css');
 
-import Game, { GameStats } from './game';
+import Game from './game';
+import GameStats from './utils/game-stats';
 import { DEBUG } from './constants';
 
 class App {

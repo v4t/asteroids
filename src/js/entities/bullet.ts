@@ -1,17 +1,17 @@
-import Entity from "./entity";
-import Vector2D from "../utils/vector2d";
+import Entity from './entity';
+import { OBJECT_COLOR } from '../constants';
 
 const BULLET_TTL = 30;
+const VELOCITY = 1000;
+const RADIUS = 2;
 
 export default class Bullet extends Entity {
     public isActive: boolean = false;
 
-    private source: Entity;
     private ttl: number;
 
-    constructor(source: Entity) {
-        super({ x: 0, y: 0 }, 2, { x: 1000, y: 1000 }, 0);
-        this.source = source;
+    constructor() {
+        super({ x: 0, y: 0 }, RADIUS, { x: VELOCITY, y: VELOCITY }, 0);
     }
 
     public fire(direction: number, x: number, y: number): void {
@@ -24,7 +24,7 @@ export default class Bullet extends Entity {
 
     public render(ctx: CanvasRenderingContext2D): void {
         if (!this.isActive) return;
-        ctx.fillStyle = '#f9f9f9'
+        ctx.fillStyle = OBJECT_COLOR;
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, 2, 0, Math.PI * 2);

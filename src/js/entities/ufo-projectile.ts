@@ -1,9 +1,11 @@
-import Entity from "./entity";
-import Vector2D from "../utils/vector2d";
-import Sprite from "../utils/sprite";
+import Entity from './entity';
+import Vector2D from '../utils/vector2d';
+import Sprite from '../utils/sprite';
 
 const PROJECTILE_TTL = 200;
 const PROJECTILE_SPEED = 150;
+const RADIUS = 5
+
 const SPRITE_SOURCE = '../assets/ufo-projectile.png';
 const SPRITE_FRAMES = 5;
 const FRAME_HEIGHT = 15;
@@ -18,7 +20,7 @@ export default class UfoProjectile extends Entity {
     private readonly sprite: Sprite;
 
     constructor(source: Vector2D, direction: number) {
-        super({ x: source.x, y: source.y }, 5, { x: PROJECTILE_SPEED, y: PROJECTILE_SPEED }, direction);
+        super({ x: source.x, y: source.y }, RADIUS, { x: PROJECTILE_SPEED, y: PROJECTILE_SPEED }, direction);
         this.isActive = true;
         this.ttl = PROJECTILE_TTL;
 

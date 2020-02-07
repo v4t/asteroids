@@ -1,16 +1,13 @@
 import { keyDownListener, keyUpListener, clearKeyState } from './controls';
 import Ship from './entities/ship';
-import Asteroid, { AsteroidCategory } from './entities/asteroid';
+import Asteroid from './entities/asteroid';
+import AsteroidCategory from './entities/asteroid-category';
 import Ufo from './entities/ufo';
 import UfoProjectile from './entities/ufo-projectile';
 import Vector2D from './utils/vector2d';
+import GameStats from './utils/game-stats';
 import { ShrapnelParticle, createAnimation, updateParticle, renderParticle } from './utils/shrapnel-animation';
-import { WIDTH, HEIGHT, SCREEN_BACKGROUND_COLOR } from './constants';
-
-export interface GameStats {
-    readonly level: number;
-    readonly score: number;
-}
+import { WIDTH, HEIGHT, SCREEN_COLOR } from './constants';
 
 export default class Game {
     private level: number = 1;
@@ -96,7 +93,7 @@ export default class Game {
     }
 
     public render(): void {
-        this.ctx.fillStyle = SCREEN_BACKGROUND_COLOR;
+        this.ctx.fillStyle = SCREEN_COLOR;
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         if (!this.gameOver) {

@@ -1,7 +1,10 @@
 import Entity from './entity';
-import Vector2D from '../utils/vector2d';
 import UfoProjectile from './ufo-projectile';
 import Sprite from '../utils/sprite';
+
+const VELOCITY = 100;
+const RADIUS = 15;
+const RELOAD_TIMER= 240;
 
 const SPRITE_SOURCE = '../assets/ufo.png';
 const SPRITE_FRAMES = 1;
@@ -14,7 +17,7 @@ export default class Ufo extends Entity {
     private reloadTimer = 0;
 
     constructor(x: number, y: number, target: Entity) {
-        super({x, y}, 15, {x: 100, y: 100}, Math.random() * (2 * Math.PI));
+        super({x, y}, RADIUS, {x: VELOCITY, y: VELOCITY}, Math.random() * (2 * Math.PI));
         this.target = target;
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
@@ -38,7 +41,7 @@ export default class Ufo extends Entity {
     }
 
     public fireProjectile(): UfoProjectile {
-        this.reloadTimer = 240;
+        this.reloadTimer = RELOAD_TIMER;
         const targetDirection = Math.atan2(this.target.y - this.y, this.target.x - this.x);
         return new UfoProjectile(this.position, targetDirection);
     }
