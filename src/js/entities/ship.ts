@@ -1,9 +1,10 @@
 import Entity from './entity';
 import Bullet from './bullet';
 import Vector2D from '../utils/vector2d';
-import { Key, KEY_STATE } from '../controls';
+import { Key, KEY_STATE } from '../game/controls';
 import Sprite from '../utils/sprite';
 
+// Ship constants
 const RADIUS = 16;
 const MAX_VELOCITY = 500;
 const RELOAD_TIMER = 10
@@ -11,6 +12,7 @@ const THRUST_MODIFIER = 7;
 const ROTATION_MODIFIER = 0.07;
 const FRICTION = 0.99
 
+// Ship sprite constants
 const SPRITE_SOURCE = '../assets/ship.png';
 const SPRITE_FRAMES = 2;
 const FRAME_HEIGHT = 33;
@@ -24,15 +26,23 @@ export default class Ship extends Entity {
     private reloadTimer: number = 0;
     private readonly sprite: Sprite;
 
+    /**
+     *
+     * @param x - Ship's x-coordinate.
+     * @param y - Ship's y-coordinate.
+     */
     constructor(x: number, y: number) {
-        super({x, y}, RADIUS, {x: 0, y: 0}, 0);
-        this.acceleration = {x: 0, y: 0};
+        super({ x, y }, RADIUS, { x: 0, y: 0 }, 0);
+        this.acceleration = { x: 0, y: 0 };
         this.bullets = [new Bullet(), new Bullet(), new Bullet(), new Bullet()];
         this.sprite = new Sprite(SPRITE_SOURCE, SPRITE_FRAMES, FRAME_WIDTH, FRAME_HEIGHT);
     }
 
+    /**
+     * @inheritdoc
+     */
     public render(ctx: CanvasRenderingContext2D): void {
-        if(this.thrust > 0) {
+        if (this.thrust > 0) {
             this.sprite.setFrame(1);
         } else {
             this.sprite.setFrame(0);
@@ -40,9 +50,12 @@ export default class Ship extends Entity {
         this.sprite.setRotation(this.direction);
         this.sprite.render(ctx, this.x, this.y);
 
-        this.drawDebugHelpers(ctx);
+        super.drawDebugHelpers(ctx);
     }
 
+    /**
+     * @inheritdoc
+     */
     public update(delta: number): void {
         if (KEY_STATE.has(Key.Left)) this.rotateLeft();
         if (KEY_STATE.has(Key.Right)) this.rotateRight();
@@ -69,7 +82,7 @@ export default class Ship extends Entity {
         // apply friction
         this.velocity.x *= FRICTION;
         this.velocity.y *= FRICTION;
-        if(this.thrust === 0) {
+        if (this.thrust === 0) {
             if (this.velocity.x < delta && this.velocity.x > -delta) this.velocity.x = 0;
             if (this.velocity.y < delta && this.velocity.y > -delta) this.velocity.y = 0;
         }
@@ -81,18 +94,27 @@ export default class Ship extends Entity {
         if (this.velocity.x < -maxVelocity) this.velocity.x = -maxVelocity;
         if (this.velocity.y < -maxVelocity) this.velocity.y = -maxVelocity;
 
-        this.handleAreaBoundsCheck();
+        super.handleAreaBoundsCheck();
     }
 
-    public rotateLeft(): void {
+    /**
+     * Turn ship left.
+     */
+    private rotateLeft(): void {
         this.direction = (this.direction - ROTATION_MODIFIER)
     }
 
-    public rotateRight(): void {
+    /**
+     * Turn ship right.
+     */
+    private rotateRight(): void {
         this.direction = (this.direction + ROTATION_MODIFIER)
     }
 
-    public fire(): void {
+    /**
+     * Fire a new bullet into ship's current direction.
+     */
+    private fire(): void {
         if (this.reloadTimer > 0) {
             this.reloadTimer -= 1;
             return;

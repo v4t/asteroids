@@ -1,6 +1,7 @@
 import Entity from './entity';
-import { OBJECT_COLOR } from '../constants';
+import { OBJECT_COLOR } from '../game/constants';
 
+// Bullet constants
 const BULLET_TTL = 30;
 const VELOCITY = 1000;
 const RADIUS = 2;
@@ -14,6 +15,13 @@ export default class Bullet extends Entity {
         super({ x: 0, y: 0 }, RADIUS, { x: VELOCITY, y: VELOCITY }, 0);
     }
 
+    /**
+     * Fire a new bullet from given position into given direction.
+     *
+     * @param direction - Bullet's travel direction in radians.
+     * @param x - X-coordinate of bullet's starting position.
+     * @param y - Y-coordinate of bullet's starting position.
+     */
     public fire(direction: number, x: number, y: number): void {
         this.isActive = true;
         this.direction = direction;
@@ -22,6 +30,9 @@ export default class Bullet extends Entity {
         this.ttl = BULLET_TTL;
     }
 
+    /**
+     * @inheritdoc
+     */
     public render(ctx: CanvasRenderingContext2D): void {
         if (!this.isActive) return;
         ctx.fillStyle = OBJECT_COLOR;
@@ -32,6 +43,9 @@ export default class Bullet extends Entity {
         ctx.closePath();
     }
 
+    /**
+     * @inheritdoc
+     */
     public update(delta: number): void {
         if (!this.isActive) return;
         this.ttl -= 1;
@@ -41,6 +55,6 @@ export default class Bullet extends Entity {
         this.position.y += (Math.sin(this.direction) * this.velocity.y * delta);
 
         // appear on the other side of the screen
-        this.handleAreaBoundsCheck();
+        super.handleAreaBoundsCheck();
     }
 }

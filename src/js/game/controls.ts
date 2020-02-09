@@ -5,8 +5,14 @@ export enum Key {
     Shoot
 }
 
+/**
+ * @const KEY_STATE - Key state map containing keys that are currently pressed.
+ */
 export const KEY_STATE = new Set<Key>();
 
+/**
+ * Clear current key state map.
+ */
 export function clearKeyState(): void {
     KEY_STATE.delete(Key.Throttle)
     KEY_STATE.delete(Key.Left)
@@ -14,6 +20,11 @@ export function clearKeyState(): void {
     KEY_STATE.delete(Key.Shoot)
 }
 
+/**
+ * Event listener for key presses.
+ *
+ * @param event - Key press event.
+ */
 export const keyDownListener = (event: KeyboardEvent) => {
     if (event.key === 'ArrowUp' || event.key === 'w') {
         KEY_STATE.add(Key.Throttle);
@@ -29,6 +40,11 @@ export const keyDownListener = (event: KeyboardEvent) => {
     }
 }
 
+/**
+ * Event listener for key up events.
+ *
+ * @param event - Key up event.
+ */
 export const keyUpListener = (event: KeyboardEvent) => {
     if (event.key === 'ArrowUp' || event.key === 'w') {
         KEY_STATE.delete(Key.Throttle);

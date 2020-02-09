@@ -1,42 +1,58 @@
 import { keyDownListener, keyUpListener, clearKeyState } from './controls';
-import Ship from './entities/ship';
-import Asteroid from './entities/asteroid';
-import AsteroidCategory from './entities/asteroid-category';
-import Ufo from './entities/ufo';
-import UfoProjectile from './entities/ufo-projectile';
-import Vector2D from './utils/vector2d';
-import GameStats from './utils/game-stats';
-import { ShrapnelParticle, createAnimation, updateParticle, renderParticle } from './utils/shrapnel-animation';
+import Ship from '../entities/ship';
+import Asteroid from '../entities/asteroid';
+import AsteroidCategory from '../entities/asteroid-category';
+import Ufo from '../entities/ufo';
+import UfoProjectile from '../entities/ufo-projectile';
+import Vector2D from '../utils/vector2d';
+import GameStats from './game-stats';
+import ImpactAnimations from '../effects/impact-animations';
 import { WIDTH, HEIGHT, SCREEN_COLOR } from './constants';
 
+// Ufo spawn constants
+const UFO_SPAWN_DELAY = 60;
+const UFO_SPAWN_CHANCE = 0.001
+
 export default class Game {
+    // Game state
     private level: number = 1;
     private score: number = 0;
     private gameOver: boolean = false;
 
+    // Game screen
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
     private width: number = WIDTH;
     private height: number = HEIGHT;
 
+    // Game entities
     private ship: Ship;
     private asteroids: Asteroid[] = [];
     private ufos: Ufo[] = [];
     private ufoProjectiles: UfoProjectile[] = [];
-    private shrapnelParticles: ShrapnelParticle[] = [];
-    private ufoSpawnTimer = 60;
+    private ufoSpawnTimer = 300;
+
+    // Other effects
+    private impactAnimations: ImpactAnimations;
 
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-        this.ctx = this.canvas.getContext("2d");
+        this.ctx = this.canvas.getContext('2d');
+        this.impactAnimations = new ImpactAnimations();
     }
 
+    /**
+     * @return - True if game is over, false otherwise.
+     */
     public hasEnded(): boolean {
         return this.gameOver;
     }
 
+    /**
+     * @return - Current level and score.
+     */
     public getGameStats(): GameStats {
         return {
             level: this.level,
@@ -44,14 +60,19 @@ export default class Game {
         };
     }
 
+    /**
+     * Initialize new game.
+     */
     public init(): void {
         document.addEventListener('keydown', keyDownListener);
         document.addEventListener('keyup', keyUpListener);
 
-        this.ship = new Ship(WIDTH / 2, HEIGHT / 2);
-        this.spawnNewAsteroids(3);
+        this.restart();
     }
 
+    /**
+     * Setup new game by clearing existing entities and setting up new initial state.
+     */
     public restart(): void {
         clearKeyState();
         this.gameOver = false;
@@ -64,6 +85,11 @@ export default class Game {
         this.spawnNewAsteroids(3);
     }
 
+    /**
+     * Update game entities once per tick.
+     *
+     * @param deltaTime - Change in time between last and current frame.
+     */
     public update(deltaTime: number): void {
         if (!this.gameOver) {
             this.ship.update(deltaTime);
@@ -71,9 +97,10 @@ export default class Game {
         }
         this.asteroids.forEach(a => a.update(deltaTime));
 
-        if (this.ufoSpawnTimer <= 0 && this.asteroids.length > 0 && Math.random() < 0.002 && this.ufos.length < this.level) {
+        this.ufoSpawnTimer--;
+        if (this.ufoSpawnTimer <= 0 && Math.random() <= UFO_SPAWN_CHANCE) {
             this.spawnNewUfo();
-            this.ufoSpawnTimer = 60;
+            this.ufoSpawnTimer = UFO_SPAWN_DELAY;
         }
         this.ufos.forEach(u => {
             u.update(deltaTime);
@@ -88,10 +115,12 @@ export default class Game {
             this.level++;
             this.spawnNewAsteroids(this.level + 2);
         }
-        this.shrapnelParticles.forEach(i => updateParticle(deltaTime, i));
-        this.ufoSpawnTimer--;
+        this.impactAnimations.updateAnimations(deltaTime);
     }
 
+    /**
+     * Render game entities once per tick.
+     */
     public render(): void {
         this.ctx.fillStyle = SCREEN_COLOR;
         this.ctx.fillRect(0, 0, this.width, this.height);
@@ -105,15 +134,23 @@ export default class Game {
             u.render(this.ctx);
         });
         this.ufoProjectiles.forEach(p => p.render(this.ctx));
-        this.shrapnelParticles.forEach(i => renderParticle(this.ctx, i));
+        this, this.impactAnimations.renderAnimations(this.ctx);
     }
 
+    /**
+     * Add a new ufo to the game.
+     */
     private spawnNewUfo(): void {
         if (this.gameOver) return;
         const position = this.getNewSpawnPosition();
         this.ufos.push(new Ufo(position.x, position.y, this.ship));
     }
 
+    /**
+     * Add new asteroids to the game.
+     *
+     * @param count - Number of new asteroids.
+     */
     private spawnNewAsteroids(count: number): void {
         for (let i = 0; i < count; i++) {
             const position = this.getNewSpawnPosition();
@@ -121,6 +158,11 @@ export default class Game {
         }
     }
 
+    /**
+     * Get a random spawn position for a new entity at the edge of the screen.
+     *
+     * @return - Spawn position as vector.
+     */
     private getNewSpawnPosition(): Vector2D {
         if (Math.random() > 0.5) {
             return {
@@ -135,6 +177,9 @@ export default class Game {
         }
     }
 
+    /**
+     * Check for collisions between various entities.
+     */
     private handleCollisions(): void {
         if (this.gameOver) return;
         this.handleBulletCollisions();
@@ -143,6 +188,9 @@ export default class Game {
         this.handleShipCollisions();
     }
 
+    /**
+     * Check if any bullet collides with ufo or asteroid and apply the effects of collisions.
+     */
     private handleBulletCollisions(): void {
         for (const bullet of this.ship.bullets) {
             if (!bullet.isActive) continue;
@@ -155,7 +203,7 @@ export default class Game {
             }
             const ufoIndex = this.ufos.findIndex(u => u.intersectsWith(bullet));
             if (ufoIndex >= 0) {
-                this.createExplosion(this.ufos[ufoIndex].x, this.ufos[ufoIndex].y);
+                this.impactAnimations.startImpactAnimation(this.ufos[ufoIndex].x, this.ufos[ufoIndex].y);
                 this.ufos.splice(ufoIndex, 1);
                 bullet.isActive = false;
                 this.score += 1000;
@@ -163,6 +211,9 @@ export default class Game {
         }
     }
 
+    /**
+     * Check if any ufo projectile collides with ship or asteroids and apply the effects of collisions.
+     */
     private handleUfoProjectileCollisions(): void {
         for (const projectile of this.ufoProjectiles) {
             if (!projectile.isActive) continue;
@@ -179,6 +230,9 @@ export default class Game {
         }
     }
 
+    /**
+     * Check if ship collides with any ufo or asteroid and apply the effects of collisions.
+     */
     private handleShipCollisions(): void {
         const ufoCollisionFound = this.ufos.some(u => u.intersectsWith(this.ship));
         const asteroidCollisionFound = this.asteroids.some(u => u.intersectsWith(this.ship));
@@ -187,6 +241,9 @@ export default class Game {
         }
     }
 
+    /**
+     * Check if any ufo ship collides with any asteroid and apply the effects of collisions.
+     */
     private handleUfoCollisions(): void {
         this.ufos.forEach((ufo, indexAt) => {
             const asteroidIndex = this.asteroids.findIndex(a => a.intersectsWith(ufo));
@@ -197,9 +254,15 @@ export default class Game {
         })
     }
 
+    /**
+     * Split asteroid into two smaller asteroids. If asteroid is already as small as possible,
+     * destroy it.
+     *
+     * @param indexAt - Asteroid's position at asteroid entity table.
+     */
     private splitAsteroid(indexAt: number): void {
         const asteroid = this.asteroids[indexAt];
-        this.createExplosion(asteroid.x, asteroid.y);
+        this.impactAnimations.startImpactAnimation(asteroid.x, asteroid.y);
         this.asteroids.splice(indexAt, 1);
         if (asteroid.category === AsteroidCategory.Small) return;
 
@@ -213,12 +276,11 @@ export default class Game {
         ]);
     }
 
-    private createExplosion(x: number, y: number): void {
-        this.shrapnelParticles.push(...createAnimation(x, y));
-    }
-
+    /**
+     * End game when ship gets destroyed.
+     */
     private endGame(): void {
-        this.createExplosion(this.ship.x, this.ship.y);
+        this.impactAnimations.startImpactAnimation(this.ship.x, this.ship.y);
         this.gameOver = true;
     }
 }
