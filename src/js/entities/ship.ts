@@ -13,7 +13,7 @@ const ROTATION_MODIFIER = 0.07;
 const FRICTION = 0.99
 
 // Ship sprite constants
-const SPRITE_SOURCE = '../assets/ship.png';
+const SPRITE_SOURCE = './assets/ship.png';
 const SPRITE_FRAMES = 2;
 const FRAME_HEIGHT = 33;
 const FRAME_WIDTH = 33;

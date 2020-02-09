@@ -8,7 +8,7 @@ const RADIUS = 15;
 const RELOAD_TIMER= 240;
 
 // Sprite constants
-const SPRITE_SOURCE = '../assets/ufo.png';
+const SPRITE_SOURCE = './assets/ufo.png';
 const SPRITE_FRAMES = 1;
 const FRAME_HEIGHT = 31;
 const FRAME_WIDTH = 31;

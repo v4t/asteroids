@@ -8,7 +8,7 @@ const PROJECTILE_SPEED = 150;
 const RADIUS = 5
 
 // Sprite constants
-const SPRITE_SOURCE = '../assets/ufo-projectile.png';
+const SPRITE_SOURCE = './assets/ufo-projectile.png';
 const SPRITE_FRAMES = 5;
 const FRAME_HEIGHT = 15;
 const FRAME_WIDTH = 15;

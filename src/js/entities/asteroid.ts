@@ -6,7 +6,7 @@ import AsteroidCategory from './asteroid-category';
 const MIN_VELOCITY = 25;
 
 // Sprite constants
-const SPRITE_SOURCE = '../assets/asteroids.png';
+const SPRITE_SOURCE = './assets/asteroids.png';
 const SPRITE_FRAMES = 6;
 const FRAME_HEIGHT = 111;
 const FRAME_WIDTH = 111;
