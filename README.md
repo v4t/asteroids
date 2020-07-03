@@ -1,7 +1,7 @@
 # asteroids
 
 Classic asteroids game utilizing HTML5 Canvas and TypeScript. \
-Game is currently available at https://rateli.github.io/asteroids.
+Game is currently available at https://v4t.github.io/asteroids.
 
 ### Controls
 
